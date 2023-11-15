@@ -1,0 +1,5 @@
+---
+vms:
+  hosts:
+    arturas_server_01:
+      ansible_host: 158.160.103.216
