@@ -1,0 +1,26 @@
+- name: Target (ISCSI Server) Configuring (Initializing)
+  hosts: targets
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  roles:
+  - target_initializer
+
+- name: Initiators (ISCSI Clients) Configuring (Initializing)
+  hosts: initiators
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  roles:
+  - pacemaker_initializer
+  - clvm_initializer
+  - initiators_initializer
+
+- name: Setup and start cluster on all nodes
+  hosts: clustermngr
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  roles:
+  - cluster_manager
+  - clusterfs_initializer

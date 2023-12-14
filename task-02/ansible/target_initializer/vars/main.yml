@@ -1,0 +1,9 @@
+---
+# vars file for target_initiator
+vhd_name: cluster-vhd
+reverse_domain: ru.arturas
+target_server_name: storage
+initiator_names:
+- first
+- second
+- third

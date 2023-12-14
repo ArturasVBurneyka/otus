@@ -1,0 +1,4 @@
+---
+# vars file for initiators_initializer
+reverse_domain: ru.arturas
+portal_ip: 10.128.0.20

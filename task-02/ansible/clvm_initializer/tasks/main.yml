@@ -1,0 +1,5 @@
+- name: CLVM and GFS2 package installing
+  ansible.builtin.package:
+    update_cache: yes
+    name: clvm
+    state: latest

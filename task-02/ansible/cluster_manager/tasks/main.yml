@@ -1,0 +1,35 @@
+- name: Auth all nodes in cluster
+  command:
+    cmd: pcs cluster auth -u hacluster -p debian
+
+- name: Setup cluster
+  command:
+    cmd: pcs cluster setup --name debian first.ru-central1.internal second.ru-central1.internal third.ru-central1.internal --force
+
+- name: Start cluster on all nodes
+  command:
+    cmd: pcs cluster start --all
+
+- name: Enable cluster on all nodes
+  command:
+    cmd: pcs cluster enable --all
+
+- name: Disable stonith
+  command:
+    cmd: pcs property set stonith-enabled=false
+
+- name: Freeze no-quorum policy
+  command:
+    cmd: pcs property set no-quorum-policy=freeze
+
+- name: Create resource (systemd:dlm, clone)
+  command:
+    cmd: pcs resource create dlm systemd:dlm op monitor interval=30s on-fail=ignore clone interleave=true ordered=true
+
+- name: Create resource (ocf:heartbeat:clvm, clone)
+  command:
+    cmd: pcs resource create clvm ocf:heartbeat:clvm op monitor interval=30s on-fail=ignore clone interleave=true ordered=true
+
+- name: Set start order (dlm-clone then clvm-clone)
+  command:
+    cmd: pcs constraint order start dlm-clone then clvm-clone

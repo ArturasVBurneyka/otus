@@ -1,0 +1,39 @@
+- name: PACEMAKER and PCS packages installing
+  ansible.builtin.package:
+    update_cache: yes
+    name:
+    - pacemaker
+    - pcs
+    - fence-agents
+    state: latest
+
+- name: Setting password for HACLUSTER user
+  ansible.builtin.user:
+    name: hacluster
+    password: $1$ShuT2vAM$yOSqt2W6n6QftG1LWknD1/
+
+- name: Copying hosts file to /etc/hosts
+  ansible.builtin.copy:
+    src: hosts
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Copying corosync config file to /etc/corosync/corosync.conf
+  ansible.builtin.copy:
+    src: corosync.conf
+    dest: /etc/corosync/corosync.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: COROSYNC, PACEMAKER and PCS services restarting and enabling
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+  - pcsd
+  - pacemaker
+  - corosync

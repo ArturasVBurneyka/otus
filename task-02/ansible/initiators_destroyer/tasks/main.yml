@@ -1,0 +1,30 @@
+---
+# tasks file for initiators_destroyer
+- name: Unlogin from iSCSI Target
+  command:
+    cmd: iscsiadm -m node -u
+
+- name: All services stopping end disabling
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  with_items:
+  - dlm
+  - iscsid
+  - open-iscsi
+  - pcsd
+  - pacemaker
+  - corosync
+
+- name: All packages removing
+  ansible.builtin.package:
+    name:
+    - corosync
+    - pacemaker
+    - pcs
+    - open-iscsi
+    - dlm-controld
+    - lvm2
+    - gfs2-utils
+    state: absent

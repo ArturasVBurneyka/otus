@@ -1,0 +1,31 @@
+- name: CLVM and GFS2 package installing
+  ansible.builtin.package:
+    update_cache: yes
+    name: gfs2-utils
+    state: latest
+
+- name: DLM daemon starting
+  ansible.builtin.service:
+    name: dlm
+    state: started
+    enabled: yes
+
+- name: Change locking_type from 1 (one) to 3 (three)
+  command:
+    cmd: sed -i "s/locking_type = 1/locking_type = 3/g" /etc/lvm/lvm.conf
+
+- name: Create physical volume
+  command:
+    cmd: pvcreate /dev/sda
+
+- name: Create volume group
+  command:
+    cmd: vgcreate --autobackup y --clustered y ClusterVG /dev/sda
+
+- name: Create logical volume
+  command:
+    cmd: lvcreate -l 100%FREE --name ClusterLV ClusterVG
+
+- name: Format to GFS2
+  command:
+    cmd: sudo mkfs.gfs2 -j 3 -p lock_dlm -t debian:gfs2 /dev/ClusterVG/ClusterLV

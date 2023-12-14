@@ -1,0 +1,19 @@
+all:
+  children:
+    initiators:
+      vars:
+      hosts:
+        51.250.81.19:
+          iqn_end: first
+        178.154.204.7:
+          iqn_end: second
+        62.84.124.105:
+          iqn_end: third
+    clustermngr:
+      vars:
+      hosts:
+        51.250.81.19:
+    targets:
+      vars:
+      hosts:
+        84.201.128.208:

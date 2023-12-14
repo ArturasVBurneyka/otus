@@ -1,0 +1,27 @@
+- name: ISCSI packages installing
+  package:
+    update_cache: yes
+    name:
+    - targetcli-fb
+    state: latest
+
+- name: Creating VHD with size of 1GB to share it throught iSCSI
+  command:
+    cmd: dd if=/dev/zero of=/mnt/{{ vhd_name }}.img bs=1M count=1024
+
+- name: Creating storage object typeof FILEIO
+  command:
+    cmd: targetcli /backstores/fileio create {{ vhd_name }} /mnt/{{ vhd_name }}.img
+
+- name: Creating ISCSI target with IQN
+  command:
+    cmd: targetcli /iscsi create iqn.2023-12.{{ reverse_domain }}:{{ target_server_name }}
+
+- name: Creating LUN (VHD -> Target)
+  command:
+    cmd: targetcli /iscsi/iqn.2023-12.{{ reverse_domain }}:{{ target_server_name }}/tpg1/luns create /backstores/fileio/{{ vhd_name }}
+
+- name: Adding initiators to ACL
+  command:
+    cmd: targetcli /iscsi/iqn.2023-12.{{ reverse_domain }}:{{ target_server_name }}/tpg1/acls create iqn.2023-12.{{ reverse_domain }}:{{ item }}
+  with_items: "{{ initiator_names }}"

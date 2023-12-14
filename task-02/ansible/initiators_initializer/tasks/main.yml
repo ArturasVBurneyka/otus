@@ -1,0 +1,35 @@
+- name: ISCSI client packages installing
+  ansible.builtin.package:
+    update_cache: yes
+    name:
+    - open-iscsi
+    state: latest
+
+- name: Setting right initiator name in /etc/iscsi/initiatorname.iscsi file
+  lineinfile:
+    path: /etc/iscsi/initiatorname.iscsi
+    regexp: "InitiatorName="
+    line: InitiatorName=iqn.2023-12.{{ reverse_domain }}:{{ iqn_end }}
+
+- name: iscsid & open-iscsi daemons restarting
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+  - iscsid
+  - open-iscsi
+
+- name: Discovering Target (iSCSI server)
+  command:
+    cmd: iscsiadm -m discovery -t sendtargets -p {{ portal_ip }}
+
+- name: Logging to Target (iSCSI server)
+  command:
+    cmd: iscsiadm -m node -l
+
+- name: Starting and enabling DLM service
+  ansible.builtin.service:
+    name: dlm
+    state: started
+    enabled: yes
