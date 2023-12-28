@@ -12,7 +12,7 @@
   remote_user: ubuntu
   become: yes
   roles:
-#  - mongodb
+  - mongodb
 
 - name: Setup all needed to backend servers
   hosts: backends
@@ -20,5 +20,5 @@
   remote_user: ubuntu
   become: yes
   roles:
-#  - aspnetcorert
-#  - service
+  - aspnetcorert
+  - service
