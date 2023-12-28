@@ -1,0 +1,24 @@
+- name: Setup all needed to loadbalancer server(s)
+  hosts: loadbalancers
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  roles:
+  - nginx
+
+- name: Setup all needed to database server(s)
+  hosts: databases
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  roles:
+#  - mongodb
+
+- name: Setup all needed to backend servers
+  hosts: backends
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  roles:
+#  - aspnetcorert
+#  - service

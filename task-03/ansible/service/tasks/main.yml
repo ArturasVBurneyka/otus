@@ -1,0 +1,39 @@
+- name: Stop systemd unit
+  ansible.builtin.systemd:
+    state: stopped
+    name: CultureObjects
+  ignore_errors: true
+
+- name: Remove directory with old version of service
+  ansible.builtin.file:
+    path: /usr/share/cultureobjects
+    state: absent
+
+- name: Create directory for service
+  ansible.builtin.file:
+    path: /usr/share/cultureobjects
+    state: directory
+    mode: "0777"
+
+- name: Extract archive into /usr/share/cultureobjects
+  ansible.builtin.unarchive:
+    src: CultureObjects.Service.tar
+    dest: /usr/share/cultureobjects
+    mode: "0777"
+
+- name: Copy systemd unit file
+  ansible.builtin.copy:
+    src: CultureObjects.service
+    dest: /etc/systemd/system/CultureObjects.service
+    owner: root
+    group: root
+    mode: "0777"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Start systemd unit
+  ansible.builtin.systemd:
+    state: started
+    name: CultureObjects

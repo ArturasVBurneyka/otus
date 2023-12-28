@@ -1,0 +1,15 @@
+- name: Download latest AspNetCore Runtime from official site
+  ansible.builtin.get_url:
+    url: "https://download.visualstudio.microsoft.com/download/pr/0cf64d28-dec3-4553-b38d-8f526e6f64b0/0bf8e79d48da8cb4913bc1c969653e9a/aspnetcore-runtime-6.0.25-linux-x64.tar.gz"
+    dest: "/home/ubuntu/{{ aspnetcore_runtime_version }}-linux-x64.tar.gz"
+    mode: "0777"
+
+- name: Creates /usr/share/aspnetcore-runtime-6.0.25
+  ansible.builtin.file:
+    path: /usr/share/{{ aspnetcore_runtime_version }}
+    state: directory
+    mode: "0777"
+
+- name: Extract aspnetcore-runtime-6.0.25-linux-x64.tar.gz into /home/ubuntu
+  command:
+    cmd: tar --extract --gzip --file={{ aspnetcore_runtime_version }}-linux-x64.tar.gz --directory=/usr/share/{{ aspnetcore_runtime_version }}

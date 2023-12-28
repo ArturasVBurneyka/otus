@@ -1,0 +1,23 @@
+- name: Install docker.io package from official Ubuntu repository
+  ansible.builtin.package:
+    update_cache: yes
+    name: docker.io
+    state: latest
+
+- name: Start docker.service daemon
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Pull image with MongoDB
+  command:
+    cmd: docker pull mongo:7.0.4-jammy
+
+- name: Start container with MongoDB
+  command:
+    cmd: docker container run --name mongodb-7.0.4 -d -p 27017:27017 --restart always -e MONGO_INITDB_ROOT_USERNAME=arturas -e MONGO_INITDB_ROOT_PASSWORD=0000 mongo:7.0.4-jammy
+
+- name: Download MongoDB Database Tools
+  command:
+    cmd: wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu1604-arm64-100.9.4.deb

@@ -1,0 +1,14 @@
+[Unit]
+Description=Culture objects service
+
+[Service]
+WorkingDirectory=/usr/share/cultureobjects
+ExecStart=/usr/share/aspnetcore-runtime-6.0.25/dotnet CultureObjectsService.dll --urls "http://0.0.0.0:2048"
+SyslogIdentifier=CultureObjects
+User=root
+Restart=always
+RestartSec=5
+Environment=DOTNET_ROOT=/usr/share/aspnetcore-runtime-6.0.8
+
+[Install]
+WantedBy=multi-user.target

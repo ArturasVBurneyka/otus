@@ -1,0 +1,15 @@
+all:
+  children:
+    loadbalancers:
+      vars:
+      hosts:
+        84.201.159.221:
+    backends:
+      vars:
+      hosts:
+        158.160.108.113:
+        158.160.122.122:
+    databases:
+      vars:
+      hosts:
+        158.160.61.231:

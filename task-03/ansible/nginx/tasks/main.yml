@@ -1,0 +1,28 @@
+- name: Install nginx package
+  ansible.builtin.package:
+    name: nginx
+    state: latest
+
+- name: Copy config file with load balancing
+  ansible.builtin.copy:
+    src: cultureobjects.conf
+    dest: /etc/nginx/conf.d/cultureobjects.conf
+    owner: root
+    group: root
+    mode: "0666"
+
+- name: Remove default server block
+  ansible.builtin.file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
+- name: Remove link to default server block
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Restart and enable nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: true
