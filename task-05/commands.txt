@@ -1,0 +1,101 @@
+sudo cat /etc/hosts
+sudo dd if=/dev/null of=/etc/hosts
+echo "127.0.0.1 localhost" | sudo tee --append /etc/hosts
+sudo cat /etc/hosts
+
+sudo apt update
+sudo apt install -y mysql-server
+
+sudo systemctl status mysql.service
+sudo systemctl stop mysql.service
+
+sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf | grep bind-address
+sudo sed -i "s/^bind-address.*$/bind-address = 0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo sed -i "s/^mysqlx-bind-address.*$/mysqlx-bind-address = 0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf
+
+sudo mysql --execute="select User, Host, plugin from mysql.user"
+sudo mysql --execute="update mysql.user set plugin='mysql_native_password' where User='root'"
+sudo mysql --execute="alter user 'root'@'localhost' identified with mysql_native_password by '0000'"
+
+mysql --user=root --password="0000" --execute="create user 'croot'@'%' identified with mysql_native_password by '0001'"
+mysql --user=root --password="0000" --execute="grant all privileges on *.* to 'croot'@'%' with grant option"
+mysql --user=root --password="0000" --execute="flush privileges"
+
+mysql --user=root --password="0000" --execute="select User, Host, plugin from mysql.user"
+
+wget https://dev.mysql.com/get/Downloads/MySQL-Shell/mysql-shell-8.0.35-linux-glibc2.28-x86-64bit.tar.gz
+tar -xzvf mysql-shell-8.0.35-linux-glibc2.28-x86-64bit.tar.gz
+sudo ln -s ~/mysql-shell-8.0.35-linux-glibc2.28-x86-64bit/bin/mysqlsh /usr/bin/
+
+shell.options.setPersist('history.autoSave', 1)
+shell.options.setPersist('history.maxSize', 5000)
+
+mysqlsh --sql --host=localhost --user=root --password='0000' --execute='select User, Host, plugin from mysql.user' --table
+(???)dba.configureInstance('croot@mysql-first.ru-central1.internal')
+For each cluster node:
+dba.configureLocalInstance("root@localhost:3306");
+update mysql.user set plugin='mysql_native_password' where User='icroot';
+(???)shell.connect('croot@mysql-first:3306');
+show variables like 'group_replication%';
+cluster = dba.createCluster('arturas');
+cluster.addInstance('croot@mysql-first:3306');
+cluster.addInstance('croot@mysql-second:3306');
+cluster.addInstance('croot@mysql-third:3306');
+cluster.status();
+
+
+shell.connect('root@localhost:3306');
+shell.disconnect();
+shell.connect("croot@mysql-first");
+shell.connect("croot@mysql-second");
+shell.connect("croot@mysql-third");
+dba.getCluster().status();
+dba.checkInstanceConfiguration();
+dba.configureInstance();
+
+wget https://storage.yandexcloud.net/culture-objects/cultobjects.csv
+
+create database cultobjects;
+
+create table cultobjects (
+    nativeId int not null,
+    nativeName varchar(512) not null,
+    regionId int not null,
+    regionName varchar(128) not null,
+    fullAddress varchar(128) not null,
+    latitude float(24) null,
+    longitude float(24) null,
+    primary key (nativeId)
+);
+
+LOAD DATA INFILE '/var/lib/mysql-files/1.csv' 
+INTO TABLE cultobjects 
+FIELDS TERMINATED BY '|' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+create table cultobjects (id serial, doc json);
+mysqlsh root:0000@localhost/cultobjects --import 1.json cultobjects doc
+
+create table cultobjects.cultobjects (
+    id serial,
+    nativeId int not null,
+    nativeName nvarchar(1024) not null,
+    regionId int not null,
+    regionName nvarchar(128) not null,
+    primary key (id)
+);
+
+select * from cultobjects.cultobjects limit 10;
+truncate table cultobjects.cultobjects;
+
+load data infile "/var/lib/mysql-files/cultobjects.csv"
+into table cultobjects
+fields terminated by "|"
+lines terminated by "\n"
+ignore 1 rows
+(@nativeId, @nativeName, @regionId, @regionName, @fullAddress, @latitude, @longitude)
+set nativeId=@nativeId, nativeName=@nativeName, regionId=@regionId, regionName=@regionName;
+
+insert into cultobjects (nativeId, nativeName)
+values (147449, "Дом, в котором в 1917 г. находился Совет рабочих и солдатских депутатов и Военно-революционный комитет. Здесь в 1925 г. выступал вождь немецких коммунистов Эрнст Тельман");
