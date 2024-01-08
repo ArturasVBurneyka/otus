@@ -1,0 +1,48 @@
+- name: Install the latest version of MySQL
+  ansible.builtin.package:
+    name: mysql-server
+    state: latest
+
+- name: Set up bind-address
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: "^bind-address.*$"
+    line: bind-address = 0.0.0.0
+
+- name: Set up mysqlx-bind-address
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: "^mysqlx-bind-address.*$"
+    line: mysqlx-bind-address = 0.0.0.0
+
+- name: Change auth plugin for root
+  ignore_errors: yes
+  command:
+    cmd: mysql --execute="update mysql.user set plugin='mysql_native_password' where User='root'"
+    
+
+- name: Change password for root
+  ignore_errors: yes
+  command:
+    cmd: mysql --execute="alter user 'root'@'localhost' identified with mysql_native_password by '0000'"
+
+- name: Restart MySQL service
+  ansible.builtin.service:
+    name: mysql
+    state: restarted
+
+- name: Download MySQL Shell
+  command:
+    cmd: wget -O /home/ubuntu/mysql-shell-8.0.35.tar.gz https://dev.mysql.com/get/Downloads/MySQL-Shell/mysql-shell-8.0.35-linux-glibc2.28-x86-64bit.tar.gz
+
+- name: Extract archive
+  command:
+    cmd: tar -xzvf /home/ubuntu/mysql-shell-8.0.35.tar.gz
+
+- name: Create a symbolic link to MySQL Shell
+  ansible.builtin.file:
+    src: /home/ubuntu/mysql-shell-8.0.35-linux-glibc2.28-x86-64bit/bin/mysqlsh
+    dest: /usr/bin/mysqlsh
+    owner: root
+    group: root
+    state: link

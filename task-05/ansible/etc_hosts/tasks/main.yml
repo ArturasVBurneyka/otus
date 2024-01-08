@@ -1,0 +1,9 @@
+- name: Clear /etc/hosts
+  command:
+    cmd: dd if=/dev/null of=/etc/hosts
+
+- name: Add one record to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: 127.0.0.1 localhost
+    create: yes

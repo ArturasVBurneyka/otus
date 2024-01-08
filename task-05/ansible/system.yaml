@@ -1,0 +1,8 @@
+- name: Setup all needed for InnoDB Cluster
+  hosts: databases
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  roles:
+  - etc_hosts
+  - mysql
