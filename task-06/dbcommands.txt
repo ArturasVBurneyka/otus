@@ -1,0 +1,18 @@
+psql -U postgres -d cultureobjects
+
+create table cultureobjects (
+    id serial,
+    native_id int,
+    native_name text,
+    region_id int,
+    region_name text,
+    full_address text,
+    latitude real,
+    longitude real,
+    primary key (id)
+);
+
+copy cultureobjects(native_id, native_name, region_id, region_name, full_address, latitude, longitude)
+from '/var/lib/postgresql/14/cultobjects.csv'
+delimiter '|'
+csv header;
