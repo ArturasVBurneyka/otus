@@ -3,9 +3,13 @@ all:
     etcd_servers:
       vars:
       hosts:
+        178.154.201.192:
     postgresql_servers:
       vars:
       hosts:
+        130.193.36.78:
+        158.160.98.31:
+        178.154.200.43:
     haproxy_servers:
       vars:
       hosts:

@@ -4,7 +4,7 @@
   remote_user: ubuntu
   become: yes
   roles:
-#  - etcd
+  - etcd
 
 - name: POSTGRESQL (cluster mode)
   hosts: postgresql_servers
@@ -12,7 +12,7 @@
   remote_user: ubuntu
   become: yes
   roles:
-#  - postgresql
+  - postgresql
 
 - name: PATRONI
   hosts: postgresql_servers
@@ -20,7 +20,7 @@
   remote_user: ubuntu
   become: yes
   roles:
-#  - patroni
+  - patroni
 
 - name: HAPROXY
   hosts: haproxy_servers
