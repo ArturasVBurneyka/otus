@@ -1,0 +1,19 @@
+- name: Install PostgreSQL packages
+  ansible.builtin.package:
+    name:
+    - postgresql
+    - postgresql-contrib
+    state: latest
+
+- name: Copy pg_hba.conf file
+  ansible.builtin.copy:
+    src: pg_hba.conf
+    dest: /etc/postgresql/14/main/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: "0640"
+
+- name: Restart PostgreSQL service
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted

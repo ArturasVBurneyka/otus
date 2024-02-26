@@ -1,0 +1,72 @@
+- name: Stop & disable postgresql service
+  ansible.builtin.service:
+    name: postgresql
+    state: stopped
+    enabled: false
+
+- name: Drop default postgresql cluster (14/main)
+  command:
+    cmd: pg_dropcluster 14 main
+  ignore_errors: yes
+
+- name: Update repo cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install Python packages
+  ansible.builtin.package:
+    name:
+    - python3-pip
+    - python3-dev
+    - libpq-dev
+    state: latest
+
+- name: Install Pip3
+  command:
+    cmd: pip3 install --upgrade pip
+
+- name: Install Patroni
+  command:
+    cmd: pip install patroni
+
+- name: Install Patroni-ETCD
+  command:
+    cmd: pip install python-etcd
+
+- name: Install psycopg2
+  command:
+    cmd: pip install psycopg2
+
+- name: Create /var/lib/postgresql/14/patroni directory
+  ansible.builtin.file:
+    path: /var/lib/postgresql/14/patroni
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: "0700"
+
+- name: Generate config file for PATRONI from template and copy it to /mnt/patroni
+  ansible.builtin.template:
+    src: patroni.yaml.j2
+    dest: /etc/patroni.yaml
+    owner: postgres
+    group: postgres
+    mode: "0600"
+
+- name: Copy patroni.service to /etc/systemd/system
+  ansible.builtin.copy:
+    src: patroni.service
+    dest: /etc/systemd/system/patroni.service
+    owner: root
+    group: root
+    mode: "0777"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Start & enable patroni service
+  ansible.builtin.service:
+    name: patroni
+    state: started
+    enabled: yes

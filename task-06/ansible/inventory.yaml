@@ -1,0 +1,12 @@
+all:
+  children:
+    etcd_servers:
+      vars:
+      hosts:
+    postgresql_servers:
+      vars:
+      hosts:
+    haproxy_servers:
+      vars:
+      hosts:
+        158.160.125.170:

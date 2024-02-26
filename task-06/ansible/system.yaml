@@ -1,0 +1,31 @@
+- name: ETCD (single, non-cluster mode)
+  hosts: etcd_servers
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+  roles:
+#  - etcd
+
+- name: POSTGRESQL (cluster mode)
+  hosts: postgresql_servers
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+  roles:
+#  - postgresql
+
+- name: PATRONI
+  hosts: postgresql_servers
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+  roles:
+#  - patroni
+
+- name: HAPROXY
+  hosts: haproxy_servers
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+  roles:
+  - haproxy

@@ -1,0 +1,17 @@
+- name: Install etcd package
+  ansible.builtin.package:
+    name: etcd
+    state: latest
+
+- name: Generate config file for ETCD from template and copy it to /etc/default/
+  ansible.builtin.template:
+    src: etcd.j2
+    dest: /etc/default/etcd
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Restart etcd servise
+  ansible.builtin.service:
+    name: etcd
+    state: restarted
