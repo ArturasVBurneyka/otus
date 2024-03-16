@@ -1,0 +1,12 @@
+all:
+  children:
+    consul_servers:
+      vars:
+      hosts:
+        178.154.223.142:
+        84.201.158.106:
+        158.160.127.65:
+    consul_clients:
+      vars:
+      hosts:
+        158.160.53.160:

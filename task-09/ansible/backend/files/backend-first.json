@@ -1,0 +1,7 @@
+{
+    "service": {
+        "name": "backend-first",
+        "tags": [ "opc-ua-service" ],
+        "port": 5252
+    }
+}

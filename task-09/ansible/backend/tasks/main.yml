@@ -1,0 +1,14 @@
+---
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: backend-first.json
+    dest: /home/ubuntu/backend-first.json
+    owner: ubuntu
+    group: ubuntu
+    mode: "0666"
+
+- name: Copy config file to container
+  shell: docker container cp /home/ubuntu/backend-first.json consul-agent:/consul/config
+
+- name: Reload Consul
+  shell: docker container exec consul-agent consul reload

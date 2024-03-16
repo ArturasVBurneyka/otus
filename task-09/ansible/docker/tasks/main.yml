@@ -1,0 +1,9 @@
+---
+- name: Update cache and install the latest version of Docker
+  ansible.builtin.apt:
+    name: docker.io
+    state: latest
+    update_cache: true
+
+- name: Pull latest image with Consul from registry
+  shell: docker pull hashicorp/consul:latest

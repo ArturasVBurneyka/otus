@@ -1,0 +1,19 @@
+- name: Initialize Consul server(s)
+  hosts: consul_servers
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+  roles:
+    #- docker
+    #- consul_server
+
+- name: Initialize Consul client(s)
+  hosts: consul_clients
+  gather_facts: yes
+  remote_user: ubuntu
+  become: yes
+  roles:
+    #- docker
+    #- consul_client
+    #- aspnetcore_runtime
+    - backend

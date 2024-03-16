@@ -1,0 +1,21 @@
+---
+- name: Generate config file and copy it to /home/ubuntu directory
+  ansible.builtin.template:
+    src: consul-server.json.j2
+    dest: /home/ubuntu/consul-server.json
+    owner: ubuntu
+    group: ubuntu
+    mode: "0666"
+
+- name: Copy script run.sh into /home/ubuntu directory
+  ansible.builtin.copy:
+    src: run.sh
+    dest: /home/ubuntu/run.sh
+    owner: ubuntu
+    group: ubuntu
+    mode: "0777"
+
+- name: Run container with Consul server
+  shell: ./run.sh
+  args:
+    chdir: /home/ubuntu

@@ -1,0 +1,30 @@
+---
+- name: Download latest version of ASP.NET Core 7.0 Runtime (v7.0.17)
+  ansible.builtin.get_url:
+    url: https://download.visualstudio.microsoft.com/download/pr/c97c327d-c699-455e-8c98-f2bee01a9816/ac33d9589182f506d2c498b5e7d52bb2/aspnetcore-runtime-7.0.17-linux-x64.tar.gz
+    dest: /home/ubuntu/aspnetcore-runtime-7.0.17-linux-x64.tar.gz
+    owner: ubuntu
+    group: ubuntu
+    mode: "0666"
+
+- name: Create a directory for ASP.NET Core 7.0 Runtime (v7.0.17)
+  ansible.builtin.file:
+    path: /home/ubuntu/aspnetcore-runtime-7.0.17
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0777"
+
+- name: Extract archive with ASP.NET Core 7.0 Runtime (v7.0.17)
+  shell: tar --extract --gunzip --file=aspnetcore-runtime-7.0.17-linux-x64.tar.gz --directory=./aspnetcore-runtime-7.0.17
+  args:
+    chdir: /home/ubuntu
+
+- name: Create a symlink to dotnet
+  ansible.builtin.file:
+    src: /home/ubuntu/aspnetcore-runtime-7.0.17/dotnet
+    dest: /usr/bin/dotnet
+    owner: root
+    group: root
+    state: link
+    mode: "0777"
