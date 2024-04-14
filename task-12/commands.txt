@@ -1,0 +1,111 @@
+CNCF (Cloud Native Computing Foundation)
+
+-------------------------------------------------------
+To install k3s and init cluster (1st or single master):
+-------------------------------------------------------
+sudo curl -sfL https://get.k3s.io | sh -s - server \
+--token "c5c77161-d5a6-4c77-87bd-2a5ca9e2706e" \
+--write-kubeconfig-mode 644 \
+--cluster-init
+-------------------------------------------------------
+
+----------------------------------------------
+To view secret toket to join worker to master:
+----------------------------------------------
+sudo cat /var/lib/rancher/k3s/server/token
+----------------------------------------------
+
+----------------------------------------------
+To install k3s (worker) and join it to master:
+----------------------------------------------
+sudo curl -sfL https://get.k3s.io | sh -s - agent \
+--server https://10.128.0.3:6443 \
+--token "K10ba24ee13b7eb2299479ea84bb048f1aa627b9356662de572f10578ed78fb7e1e::server:c5c77161-d5a6-4c77-87bd-2a5ca9e2706e"
+----------------------------------------------
+
+---------------------------------------------------------
+To install k3s (2nd & 3rd servers) and join it to master:
+---------------------------------------------------------
+sudo curl -sfL https://get.k3s.io | sh -s server \
+--server https://10.128.0.3:6443 \
+--token "c5c77161-d5a6-4c77-87bd-2a5ca9e2706e" \
+--write-kubeconfig-mode 644
+-------------------------------
+
+Config file:
+/etc/rancher/k3s/config.yaml
+
+Local storage path (default):
+/var/k3s/storage
+
+Data directory (default):
+/var/lib/rancher/k3s
+
+File with token:
+/var/lib/rancher/k3s/server/token
+
+kubectl version
+kubectl get nodes
+kubectl get pods
+kubectl get replicaset
+kubectl get deployments
+kubectl create deployment nginx-depl --image nginx:latest
+kubectl create deployment mera-opcua-client-depl --image cr.yandex/crpj08qhufgk5off0kg1/mera.opcua.client:latest
+kubectl describe pods nginx-depl-555b75c9c8-gsp4l
+kubectl describe deployments nginx-depl
+kubectl scale deployments nginx-depl --replicas 2
+kubectl autoscale deployments nginx-depl --min=2 --max=4 --cpu-percent=90
+kubectl get horizontalpodautoscalers
+kubectl port-forward <pod> port:port
+
+--------------------------------------------
+To change tag for docker image with service:
+--------------------------------------------
+sudo docker tag \
+mera.opcua.client:latest \
+cr.yandex/crpj08qhufgk5off0kg1/mera.opcua.client:latest
+--------------------------------------------
+-----------------------------------------
+To prepare image to push it to Docker Hub
+-----------------------------------------
+sudo docker tag \
+mera.opcua.client:latest \
+arturasvburneyka/opcua-service:latest
+-----------------------------------------
+
+-------------------------------
+To login to Docker Hub account:
+-------------------------------
+sudo docker login \
+--username arturasvburneyka \
+--password <...> \
+docker.io
+
+sudo docker logout
+------------------------------
+
+sudo docker push \
+arturasvburneyka/opcua-service:latest
+
+------------------------------
+To login into Yandex Cloud CR:
+------------------------------
+sudo docker login \
+--username oauth \
+--password <...> \
+cr.yandex
+------------------------------
+
+sudo docker push \
+cr.yandex/crpj08qhufgk5off0kg1/mera.opcua.client:latest
+
+sudo docker logout
+
+kubectl create secret generic yandex-cr \
+    --namespace=default \
+    --from-file=.dockerconfigjson=/root/.docker/config.json \
+    --type=kubernetes.io/dockerconfigjson
+
+kubectl port-forward opcua-client-pod 6537:6537
+
+kubectl get nodes,pods,deployments,services
